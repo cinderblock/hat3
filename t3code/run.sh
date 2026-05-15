@@ -11,6 +11,9 @@ fi
 
 export T3CODE_HOME=/data/t3code
 
+# Override the Docker hostname (HA sets it to the full slug with repo hash)
+hostname t3code 2>/dev/null || true
+
 # Check Claude auth status and guide user if not logged in
 if claude auth status 2>/dev/null | grep -q '"loggedIn"[[:space:]]*:[[:space:]]*true'; then
     bashio::log.info "Claude is authenticated"

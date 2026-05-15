@@ -11,11 +11,23 @@ fi
 
 export T3CODE_HOME=/data/t3code
 
-# Configure Anthropic API key if provided
-if bashio::config.has_value 'anthropic_api_key'; then
-    export ANTHROPIC_API_KEY
-    ANTHROPIC_API_KEY=$(bashio::config 'anthropic_api_key')
-    bashio::log.info "Anthropic API key configured"
+# Check Claude auth status and guide user if not logged in
+if claude auth status 2>/dev/null | grep -q '"loggedIn"[[:space:]]*:[[:space:]]*true'; then
+    bashio::log.info "Claude is authenticated"
+else
+    bashio::log.warning "=========================================="
+    bashio::log.warning "  Claude is NOT authenticated."
+    bashio::log.warning "  To log in, open a shell to this add-on:"
+    bashio::log.warning ""
+    bashio::log.warning "    ha addons exec local_t3code -- claude /quit"
+    bashio::log.warning ""
+    bashio::log.warning "  Or via Docker:"
+    bashio::log.warning ""
+    bashio::log.warning "    docker exec -it addon_local_t3code claude /quit"
+    bashio::log.warning ""
+    bashio::log.warning "  Follow the OAuth prompts, then restart"
+    bashio::log.warning "  this add-on."
+    bashio::log.warning "=========================================="
 fi
 
 # Install CLAUDE.md into /config if not already present

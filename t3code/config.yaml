@@ -1,0 +1,36 @@
+name: T3 Code
+version: 0.1.0
+slug: t3code
+description: Web GUI for AI coding agents — Claude, Codex, and more
+url: https://github.com/cinderblock/hat3
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+ports:
+  3773/tcp: 3773
+ports_description:
+  3773/tcp: T3 Code web interface
+webui: "http://[HOST]:[PORT:3773]"
+
+# Filesystem access — Claude Code needs read/write to manage HA
+map:
+  - config:rw
+  - share:rw
+  - ssl:ro
+  - media:rw
+  - backup:rw
+  - addons:ro
+
+# API access — full admin for complete HA management
+homeassistant_api: true
+hassio_api: true
+hassio_role: admin
+auth_api: true
+
+options:
+  anthropic_api_key: ""
+schema:
+  anthropic_api_key: str?

@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+# Lightweight Home Assistant API helper.
+#
+# Usage:
+#   ha <endpoint>                          GET request
+#   ha <endpoint> <json-body>              POST request with JSON body
+#   ha <endpoint> -X <method> [curl-args]  Custom method / extra curl flags
+#
+# The first argument is the API path relative to http://supervisor.
+# Prefix with /core/api for HA Core endpoints.
+#
+# Examples:
+#   ha /core/api/states                              List all entity states
+#   ha /core/api/states/light.living_room             Get one entity
+#   ha /core/api/services/light/turn_on \
+#      '{"entity_id":"light.living_room"}'            Call a service
+#   ha /core/api/config/core/check                    Validate config
+#   ha /core/api/template \
+#      '{"template":"{{ states.sensor.temp.state }}"}'  Render a template
+#
+#   ha /addons                                        List add-ons
+#   ha /host/info                                     Host info
+#   ha /core/restart -X POST                          Restart HA Core
+#   ha /supervisor/info                               Supervisor info
+#   ha /backups -X POST                               Create backup
+
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+    echo "Usage: ha <endpoint> [json-body | curl-args...]" >&2
+    exit 1
+fi
+
+ENDPOINT="$1"
+shift
+
+# If the next arg looks like JSON (starts with { or [), treat it as POST body
+if [ $# -ge 1 ] && [[ "$1" =~ ^[\{\[] ]]; then
+    curl -sSf \
+        -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "$1" \
+        "http://supervisor${ENDPOINT}" \
+        "${@:2}" | jq . 2>/dev/null || cat
+else
+    curl -sSf \
+        -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+        -H "Content-Type: application/json" \
+        "http://supervisor${ENDPOINT}" \
+        "$@" | jq . 2>/dev/null || cat
+fi

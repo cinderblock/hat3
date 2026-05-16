@@ -13,7 +13,7 @@ Create a Home Assistant add-on that runs the `t3` npm package in headless serve 
 - **Node.js requirement**: >= 22.16 (t3 dependency)
 - **node-pty**: native addon, needs build tools (gcc, make, python3) to compile on Linux
 - **Claude Code**: needed as subprocess for t3's Claude provider; installed via npm `@anthropic-ai/claude-code`
-- **Auth**: Claude Code needs `ANTHROPIC_API_KEY` env var (interactive OAuth not feasible in container)
+- **Auth**: Claude Code uses OAuth — run `claude /quit` inside the container to authenticate
 - **Reference script**: https://isozilla.com/t3.sh — user's existing server setup (systemd-based, bun, OAuth); NOT used directly, fresh HA-specific implementation
 
 ## Decisions Already Made (don't re-ask)
@@ -22,7 +22,7 @@ Create a Home Assistant add-on that runs the `t3` npm package in headless serve 
 - **Direct port mapping** on 3773 (not ingress — t3 expects root path, has its own pairing auth, WebSocket-heavy)
 - **npm** for package installation (not bun — more reliable on Alpine/musl)
 - **HA base image** (Alpine) with apk-installed Node.js + build tools
-- **API key auth** for Claude Code via add-on options (interactive OAuth not feasible headless in a container)
+- **OAuth auth** for Claude Code — `docker exec` into container to authenticate, credentials persist in `/data/.claude`
 - **`/data`** for persistent storage (t3 home, claude config) — survives container rebuilds
 - **Full admin access** — config:rw, share:rw, ssl:ro, media:rw, backup:rw, addons:ro, homeassistant_api, hassio_api (admin role), auth_api
 - **CWD = /config** so Claude Code operates directly on HA configuration
@@ -55,11 +55,12 @@ Create a Home Assistant add-on that runs the `t3` npm package in headless serve 
 - **`T3CODE_HOME` env var** controls where t3 stores data (auth, sessions, projects). Set to `/data/t3code` for persistence.
 - **SUPERVISOR_TOKEN** is auto-injected by HA into the container env. The `ha` helper uses it for auth.
 - **CLAUDE.md is only copied on first start** — if user or Claude modifies it, changes persist. Delete it manually to reset to template.
+- **npm `@anthropic-ai/claude-code` is a JS wrapper, NOT the native binary** — t3's agent SDK (v0.2.141+) spawns `claude` as a subprocess and communicates via stream-JSON over stdin/stdout. The JS npm wrapper doesn't support this protocol properly, causing exit code 1 on `setPermissionMode`. The curl installer (`https://claude.ai/install.sh`) downloads a platform-specific native binary with musl detection — this is what the SDK expects. Fix: switched Dockerfile from `npm install -g @anthropic-ai/claude-code` to the curl installer.
+- **`/root/.claude.json`** also needs persistence — it's a separate file from the `/root/.claude/` directory. Added symlink-to-`/data` logic in run.sh.
 
 ## Things Not to Do
 
 - Don't use ingress — t3's WebSocket/auth model doesn't play well with HA's ingress proxy
 - Don't use bun — npm is more reliable on Alpine musl
-- Don't attempt interactive OAuth in the container — use API key
-- Don't copy the setup script approach — it's systemd/bun/OAuth, none of which apply in HA containers
+- Don't install Claude Code via npm (`@anthropic-ai/claude-code`) — the npm package is a JS wrapper that doesn't support the stream-JSON protocol the agent SDK uses. Use the native binary installer (`curl -fsSL https://claude.ai/install.sh | bash`) instead.
 - Don't overwrite CLAUDE.md on restart — only install if missing

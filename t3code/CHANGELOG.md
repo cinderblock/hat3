@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Switch Claude Code from npm JS wrapper to native binary installer — fixes agent SDK crash (`setPermissionMode` exit code 1)
+- Persist `/root/.claude.json` across container rebuilds (symlinked to `/data`)
+
 ## 0.2.0
 
 - Switch from API key to Claude OAuth login (no API keys needed)

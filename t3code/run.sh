@@ -9,6 +9,17 @@ if [ ! -L /root/.claude ]; then
     ln -s /data/.claude /root/.claude
 fi
 
+# Persist .claude.json (settings/state file) across container rebuilds
+if [ -f /data/.claude.json ]; then
+    ln -sf /data/.claude.json /root/.claude.json
+elif [ -f /root/.claude.json ]; then
+    mv /root/.claude.json /data/.claude.json
+    ln -sf /data/.claude.json /root/.claude.json
+else
+    touch /data/.claude.json
+    ln -sf /data/.claude.json /root/.claude.json
+fi
+
 export T3CODE_HOME=/data/t3code
 
 # Override the Docker hostname (HA sets it to the full slug with repo hash)

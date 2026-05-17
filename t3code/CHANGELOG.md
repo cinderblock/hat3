@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4
+
+- Fix Docker layer cache not invalidating on run.sh changes (COPY config.yaml as cache-buster)
+
 ## 0.3.3
 
 - Remove startup diagnostic test (was crashing container) — replaced with simple version log

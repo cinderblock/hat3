@@ -40,6 +40,8 @@ RUN SDK_CLAUDE="$(find /usr/local/lib/node_modules/t3/node_modules/@anthropic-ai
 # Copy rootfs overlay (helper scripts, CLAUDE.md template)
 COPY rootfs /
 
+# config.yaml is copied to bust Docker layer cache when version changes
+COPY config.yaml /tmp/addon-config.yaml
 COPY run.sh /
 RUN chmod a+x /run.sh /usr/local/bin/ha
 

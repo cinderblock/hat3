@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Use SDK-bundled Claude binary instead of separate curl install — ensures exact version alignment between SDK (0.2.141) and CLI (2.1.141), fixing `setPermissionMode` exit code 1
+- Add startup diagnostic: tests Claude in agent-SDK mode and logs results
+
 ## 0.3.0
 
 - Switch Claude Code from npm JS wrapper to native binary installer — fixes agent SDK crash (`setPermissionMode` exit code 1)

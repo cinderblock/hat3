@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+
+- Fix startup crash: guard diagnostic test against bashio's `set -e` (non-zero exit from test was aborting run.sh)
+
 ## 0.3.1
 
 - Use SDK-bundled Claude binary instead of separate curl install — ensures exact version alignment between SDK (0.2.141) and CLI (2.1.141), fixing `setPermissionMode` exit code 1

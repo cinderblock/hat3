@@ -46,6 +46,7 @@ fi
 
 # Verify Claude Code works in agent-SDK mode (catches version/protocol issues)
 bashio::log.info "Testing Claude Code agent compatibility..."
+test_exit=0
 CLAUDE_CODE_ENTRYPOINT=sdk-ts CLAUDE_AGENT_SDK_VERSION=0.2.141 \
   timeout 5 claude \
     --output-format stream-json \
@@ -54,8 +55,7 @@ CLAUDE_CODE_ENTRYPOINT=sdk-ts CLAUDE_AGENT_SDK_VERSION=0.2.141 \
     --permission-mode bypassPermissions \
     --allow-dangerously-skip-permissions \
     --permission-prompt-tool stdio \
-  </dev/null >/tmp/claude-test.out 2>/tmp/claude-test.err
-test_exit=$?
+  </dev/null >/tmp/claude-test.out 2>/tmp/claude-test.err || test_exit=$?
 if [ $test_exit -eq 0 ] || [ $test_exit -eq 124 ]; then
     bashio::log.info "Claude agent mode OK (exit $test_exit, version: $(claude --version 2>/dev/null))"
 else

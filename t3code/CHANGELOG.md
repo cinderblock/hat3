@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- Remove startup diagnostic test (was crashing container) — replaced with simple version log
+
 ## 0.3.2
 
 - Fix startup crash: guard diagnostic test against bashio's `set -e` (non-zero exit from test was aborting run.sh)

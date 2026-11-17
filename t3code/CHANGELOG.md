@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.5.3
+
+- Fix the add-on stopping on start in 0.5.2 before T3 Code was installed in `/data/npm-global`
+
+## 0.5.2
+
+- Update T3 Code to the newest release on each start, so a restart is enough to upgrade. Older downloaded server versions are deleted, and the add-on starts the installed version if npm cannot be reached
+
+## 0.5.1
+
+- Fix the config check command in `CLAUDE.md`: the endpoint was wrong, so the check Claude is told to run before restarts failed. Existing `/config/CLAUDE.md` files are corrected on start
+- Fix the `ha` helper: failed requests now exit with an error and show Home Assistant's response, and plain-text responses are no longer lost
+- Add `/config` as a "Home Assistant" project in T3 Code on first start, with a Home Assistant icon (`/config/favicon.svg`)
+
+## 0.5.0
+
+- Install the GitHub CLI (`gh`), with its login kept in `/data/gh` and `git` set up to use it for GitHub
+- Keep `git config --global` settings, such as your identity, in `/data/.gitconfig`
+- Add an `extra_packages` option that installs Debian packages on each start
+- Exclude the downloaded T3 Code server from add-on backups
+
+## 0.4.1
+
+- Fix "Provider turn failed" in Claude sessions: set `IS_SANDBOX=1`, because Claude Code refuses T3's permission flags when running as root
+- Add a `machine_name` option for the name T3 Code shows for this machine
+- Correct the container name in the login instructions (`app_` prefix)
+
+## 0.4.0
+
+- Switch to a Debian base image: the `t3` npm package now downloads a glibc server executable that cannot run on Alpine
+- Install Claude Code with the native installer: the `t3` package no longer bundles a Claude binary, which made the Docker build fail
+- Remove `node-gyp` and build tools: the server ships a prebuilt `node-pty`
+- Correct the install and Claude login instructions
+
 ## 0.3.4
 
 - Fix Docker layer cache not invalidating on run.sh changes (COPY config.yaml as cache-buster)

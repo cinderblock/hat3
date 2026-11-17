@@ -31,7 +31,7 @@ List Debian package names under **Extra packages** in the **Configuration** tab,
 
 The web interface runs on port **3773** and is published on the Home Assistant host by default, so you can open `http://<your-ha-ip>:3773`. This is plain HTTP and open to your whole LAN.
 
-- **Tailscale (recommended)**: install the Tailscale add-on and use Tailscale Serve to give T3 Code an HTTPS address that only your tailnet can reach. You can then clear the 3773/tcp field in the **Network** section of the **Configuration** tab to close the LAN port. Step-by-step instructions are in the [README](https://github.com/danbuhler/hat3#remote-access-with-tailscale).
+- **Tailscale (recommended)**: install the Tailscale add-on and use Tailscale Serve to give T3 Code an HTTPS address that only your tailnet can reach. You can then clear the 3773/tcp field in the **Network** section of the **Configuration** tab to close the LAN port. Step-by-step instructions are in the [README](https://github.com/cinderblock/hat3#remote-access-with-tailscale).
 - **LAN port**: change the host port in the **Network** section if 3773 is taken.
 
 ## What Claude Can Do
@@ -55,17 +55,17 @@ Claude uses OAuth — no API keys needed. Authenticate once and credentials pers
 **To authenticate (first time or after token expiry):** run this from a shell on the HA host. The `ha` CLI has no way to run a command inside an add-on, so this needs `docker`:
 
 ```bash
-docker exec -it app_1be93311_t3code claude auth login
+docker exec -it app_10828390_t3code claude auth login
 ```
 
 Follow the prompts: visit the URL, authorize, paste the code back. Then restart the add-on.
 
-The container name comes from the repository URL, so `1be93311` is specific to `https://github.com/danbuhler/hat3`. A local add-on install uses `app_local_t3code` instead. Older Home Assistant versions use an `addon_` prefix, so run `docker ps | grep t3code` if the name is not found.
+The container name comes from the repository URL, so `10828390` is specific to `https://github.com/cinderblock/hat3`. A local add-on install uses `app_local_t3code` instead. Older Home Assistant versions use an `addon_` prefix, so run `docker ps | grep t3code` if the name is not found.
 
 **To check auth status:**
 
 ```bash
-docker exec app_1be93311_t3code claude auth status
+docker exec app_10828390_t3code claude auth status
 ```
 
 ## GitHub CLI
@@ -73,7 +73,7 @@ docker exec app_1be93311_t3code claude auth status
 `gh` is installed. To log in, run this from a shell on the HA host:
 
 ```bash
-docker exec -it app_1be93311_t3code gh auth login
+docker exec -it app_10828390_t3code gh auth login
 ```
 
 The login is stored in `/data/gh`, so it survives restarts and updates, and is included in add-on backups. Once logged in, `git` uses it for GitHub automatically. Settings made with `git config --global`, such as your name and email, are kept in `/data/.gitconfig`. Claude sessions in this add-on can use the same GitHub access, so consider a token limited to the repositories it needs.

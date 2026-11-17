@@ -93,7 +93,7 @@ else
     bashio::log.warning "  Claude is NOT authenticated."
     bashio::log.warning "  To log in, run this from a shell on the HA host:"
     bashio::log.warning ""
-    bashio::log.warning "    docker exec -it app_1be93311_t3code claude auth login"
+    bashio::log.warning "    docker exec -it app_10828390_t3code claude auth login"
     bashio::log.warning ""
     bashio::log.warning "  (Use app_local_t3code for a local add-on install.)"
     bashio::log.warning ""

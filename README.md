@@ -1,7 +1,5 @@
 # T3 Code — Home Assistant Add-on Repository
 
-Fork of [cinderblock/hat3](https://github.com/cinderblock/hat3), moved to a Debian base because the current `t3` server is a glibc executable that cannot run on the original Alpine image.
-
 Home Assistant add-on that runs [T3 Code](https://github.com/pingdotgg/t3code), a web GUI for AI coding agents (Claude, Codex, and more).
 
 ## Installation
@@ -10,7 +8,7 @@ Home Assistant add-on that runs [T3 Code](https://github.com/pingdotgg/t3code), 
 2. Click the three-dot menu (top right) > **Repositories**
 3. Paste this repository URL and click **Add**:
    ```
-   https://github.com/danbuhler/hat3
+   https://github.com/cinderblock/hat3
    ```
 4. Find **T3 Code** in the store and click **Install**
 5. Start the add-on. The first start downloads the T3 Code server (about 360 MB unpacked), so give it a minute or two
@@ -41,11 +39,11 @@ T3 Code listens on port 3773 inside the add-on container. By default the add-on 
 
 ### Find the add-on's hostname
 
-On Home Assistant's internal network the add-on is reachable as `<repo-hash>-t3code`. When the add-on is installed from `https://github.com/danbuhler/hat3`, that is `1be93311-t3code`. The prefix depends on how the repository was added, so check yours on the add-on's **Info** page (shown as **Hostname**), or from a shell on the host:
+On Home Assistant's internal network the add-on is reachable as `<repo-hash>-t3code`. When the add-on is installed from `https://github.com/cinderblock/hat3`, that is `10828390-t3code`. The prefix depends on how the repository was added, so check yours on the add-on's **Info** page (shown as **Hostname**), or from a shell on the host:
 
 ```bash
-docker ps --format '{{.Names}}' | grep t3code                               # e.g. app_1be93311_t3code
-docker inspect -f '{{.Config.Hostname}}' app_1be93311_t3code                 # e.g. 1be93311-t3code
+docker ps --format '{{.Names}}' | grep t3code                               # e.g. app_10828390_t3code
+docker inspect -f '{{.Config.Hostname}}' app_10828390_t3code                 # e.g. 10828390-t3code
 ```
 
 ### Option A: Tailscale (recommended)
@@ -61,7 +59,7 @@ Only devices in your tailnet can reach it, it gets a valid HTTPS certificate, an
    Newer Home Assistant versions name it `app_a0d7b954_tailscale`; older ones use `addon_a0d7b954_tailscale`.
 4. Tell Tailscale to serve T3 Code on port 3773, using the container name from step 3 and the hostname from above:
    ```bash
-   docker exec app_a0d7b954_tailscale /opt/tailscale serve --bg --https=3773 http://1be93311-t3code:3773
+   docker exec app_a0d7b954_tailscale /opt/tailscale serve --bg --https=3773 http://10828390-t3code:3773
    ```
 5. Open `https://<ha-machine>.<tailnet>.ts.net:3773/pair#token=<token>`, with the token from the T3 Code add-on log. Don't open the URL the log prints. The first load can take a few seconds while the certificate is issued.
 6. Recommended: close the LAN port. Go to **Settings > Add-ons > T3 Code > Configuration > Network**, clear the 3773/tcp field, save, and restart the add-on. Tailscale reaches the add-on over the internal network, so it keeps working.
@@ -84,10 +82,10 @@ This is the default: the add-on publishes 3773/tcp as host port 3773. To change 
 - **Page won't load, or the pairing URL shows a `172.30.x.x` address**: that is the internal Docker address. Use `http://<ha-ip>:3773` (check the port wasn't cleared under **Network**) or Tailscale as described in [Remote access with Tailscale](#remote-access-with-tailscale), and keep only the token from the logged URL.
 - **`Background Git fetch failed (authentication_failed)` or `No GitHub credential` in the log**: GitHub isn't logged in inside the container. The add-on includes the GitHub CLI and sets it as git's credential helper for `https://github.com`. Log in once from a shell on the host:
   ```bash
-  docker exec -it app_1be93311_t3code gh auth login
+  docker exec -it app_10828390_t3code gh auth login
   ```
   To use a personal access token instead, pipe it in:
   ```bash
-  echo "$GITHUB_TOKEN" | docker exec -i app_1be93311_t3code gh auth login --with-token
+  echo "$GITHUB_TOKEN" | docker exec -i app_10828390_t3code gh auth login --with-token
   ```
   The login is stored in `/data/gh` and survives restarts and updates. The credential helper only covers HTTPS remotes, so change any `git@github.com:` remotes to `https://github.com/...`. See [GitHub CLI](./t3code/DOCS.md#github-cli).
